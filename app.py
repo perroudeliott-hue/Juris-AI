@@ -117,10 +117,6 @@ CONSIGNES STRICTES :
 2. Identifie systématiquement les risques juridiques (déséquilibre significatif, non-conformité) avant de rédiger une clause.
 3. Conserve les balises d'anonymisation (ex: [PARTIE_A]) sans jamais inventer de données fictives.
 4. Ton ton doit être neutre, objectif et confraternel ("Maître").
-CONSIGNE SUPPLÉMENTAIRE :
-Pour chaque clause générée ou révisée, tu DOIS inclure en haut de ta réponse une ligne formatée ainsi : 
-[SCORE: X/100] Risque associé : [Explication très brève]. 
-Si le score est > 50, explique pourquoi il y a un déséquilibre significatif.
 """
 
 model = genai.GenerativeModel('gemini-3.5-flash', system_instruction=system_prompt)
@@ -158,20 +154,6 @@ if prompt := st.chat_input("Insérez vos directives ou la clause à réviser ici
 # On cherche le score dans le texte
 import re
 match = re.search(r"\[SCORE: (\d+)/100\]", response.text)
-
-if match:
-    score = int(match.group(1))
-    # Affichage visuel (Rouge = Danger, Orange = Vigilance, Vert = Correct)
-    color = "red" if score > 70 else "orange" if score > 30 else "green"
-    st.markdown(f"**Indice de Risque :** :{color}[{score}/100]")
-    st.progress(score / 100)
-
-# Affichage du texte complet
-st.markdown(response.text)
-        with st.spinner("Analyse de la conformité et rédaction en cours..."):
-            try:
-                # Utilisation de la session de chat existante pour garder le contexte
-                response = st.session_state.chat_session.send_message(prompt)
                 
                 # Affichage du texte généré
                 st.markdown(response.text)
