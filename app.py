@@ -92,6 +92,25 @@ if "chat_session" not in st.session_state:
 
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "assistant", "content": "Bonjour Maître. Quel contrat ou clause analysons-nous aujourd'hui ?"}]
+# ==========================================
+# 2.5 LIAISON MENTIONS LÉGALES
+# ==========================================
+with st.sidebar:
+    st.markdown("---")
+    # Lecture du fichier markdown et création du bouton
+    if os.path.exists("mentions_legales.md"):
+        with open("mentions_legales.md", "r", encoding="utf-8") as f:
+            mentions_text = f.read()
+        
+        # Bouton d'ouverture dans une nouvelle fenêtre via Streamlit
+        st.download_button(
+            label="📄 Mentions Légales complètes",
+            data=mentions_text,
+            file_name="Mentions_Legales.md",
+            mime="text/markdown"
+        )
+    else:
+        st.warning("Fichier 'mentions_legales.md' introuvable dans le dépôt.")
 
 # ==========================================
 # 4. INTERFACE PRINCIPALE DU CHATBOT
