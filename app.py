@@ -61,30 +61,42 @@ with st.sidebar:
     
     st.markdown("---")
     st.caption("Démo Interne - Prototype non destiné à la production.")
+
 # ==========================================
-# 2.5 AFFICHAGE PROPRE DES MENTIONS LÉGALES
+# 2.5 GESTION DES DOCUMENTS LÉGAUX
 # ==========================================
 with st.sidebar:
     st.markdown("---")
-    # On crée un bouton qui déclenche une fenêtre d'affichage (pop-up)
-    if st.button("📄 Mentions Légales & Confidentialité"):
-        if os.path.exists("mentions_legales.md"):
-            with open("mentions_legales.md", "r", encoding="utf-8") as f:
+    st.subheader("📚 Documentation")
+    
+    # Création des deux boutons
+    col1, col2 = st.columns(2)
+    with col1:
+        btn_mentions = st.button("Mentions")
+    with col2:
+        btn_cgu = st.button("CGU")
+
+    # Logique d'affichage
+    if btn_mentions:
+        st.session_state.active_doc = "mentions_legales.md"
+    if btn_cgu:
+        st.session_state.active_doc = "cgu.md"
+
+    # Affichage du document si un bouton a été cliqué
+    if "active_doc" in st.session_state:
+        doc_path = st.session_state.active_doc
+        if os.path.exists(doc_path):
+            with open(doc_path, "r", encoding="utf-8") as f:
                 contenu = f.read()
             
-            # Affichage dans une fenêtre modale
-            st.session_state.show_mentions = contenu
+            with st.expander(f"Visualisation : {doc_path.replace('.md', '').upper()}", expanded=True):
+                st.markdown(contenu)
+                if st.button("Fermer le document"):
+                    del st.session_state.active_doc
+                    st.rerun()
         else:
-            st.error("Fichier 'mentions_legales.md' non trouvé.")
-
-    # Logique pour afficher le contenu si le bouton a été cliqué
-    if "show_mentions" in st.session_state:
-        # st.modal n'existe pas nativement sous forme simple, on utilise un conteneur d'affichage
-        with st.expander("Contenu des Mentions Légales", expanded=True):
-            st.markdown(st.session_state.show_mentions)
-            if st.button("Fermer"):
-                del st.session_state.show_mentions
-                st.rerun()
+            st.error(f"Fichier {doc_path} introuvable.")
+            
 # ==========================================
 # 3. INITIALISATION DE L'API ET DE LA MÉMOIRE
 # ==========================================
