@@ -61,7 +61,30 @@ with st.sidebar:
     
     st.markdown("---")
     st.caption("Démo Interne - Prototype non destiné à la production.")
+# ==========================================
+# 2.5 AFFICHAGE PROPRE DES MENTIONS LÉGALES
+# ==========================================
+with st.sidebar:
+    st.markdown("---")
+    # On crée un bouton qui déclenche une fenêtre d'affichage (pop-up)
+    if st.button("📄 Mentions Légales & Confidentialité"):
+        if os.path.exists("mentions_legales.md"):
+            with open("mentions_legales.md", "r", encoding="utf-8") as f:
+                contenu = f.read()
+            
+            # Affichage dans une fenêtre modale
+            st.session_state.show_mentions = contenu
+        else:
+            st.error("Fichier 'mentions_legales.md' non trouvé.")
 
+    # Logique pour afficher le contenu si le bouton a été cliqué
+    if "show_mentions" in st.session_state:
+        # st.modal n'existe pas nativement sous forme simple, on utilise un conteneur d'affichage
+        with st.expander("Contenu des Mentions Légales", expanded=True):
+            st.markdown(st.session_state.show_mentions)
+            if st.button("Fermer"):
+                del st.session_state.show_mentions
+                st.rerun()
 # ==========================================
 # 3. INITIALISATION DE L'API ET DE LA MÉMOIRE
 # ==========================================
@@ -92,25 +115,6 @@ if "chat_session" not in st.session_state:
 
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "assistant", "content": "Bonjour Maître. Quel contrat ou clause analysons-nous aujourd'hui ?"}]
-# ==========================================
-# 2.5 LIAISON MENTIONS LÉGALES
-# ==========================================
-with st.sidebar:
-    st.markdown("---")
-    # Lecture du fichier markdown et création du bouton
-    if os.path.exists("mentions_legales.md"):
-        with open("mentions_legales.md", "r", encoding="utf-8") as f:
-            mentions_text = f.read()
-        
-        # Bouton d'ouverture dans une nouvelle fenêtre via Streamlit
-        st.download_button(
-            label="📄 Mentions Légales complètes",
-            data=mentions_text,
-            file_name="Mentions_Legales.md",
-            mime="text/markdown"
-        )
-    else:
-        st.warning("Fichier 'mentions_legales.md' introuvable dans le dépôt.")
 
 # ==========================================
 # 4. INTERFACE PRINCIPALE DU CHATBOT
