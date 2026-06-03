@@ -84,7 +84,7 @@ CONSIGNES STRICTES :
 4. Ton ton doit être neutre, objectif et confraternel ("Maître").
 """
 
-model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=system_prompt)
+model = genai.GenerativeModel('gemini-3.5-flash', system_instruction=system_prompt)
 
 # Correction du bug de mémoire : Initialisation d'une vraie session de chat persistante
 if "chat_session" not in st.session_state:
