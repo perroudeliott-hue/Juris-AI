@@ -9,15 +9,14 @@ L'Application intègre l'API Gemini de Google LLC pour assister les professionne
 
 ## 1. Éditeur et Directeur de la Publication
 L'Application est éditée par :
-* **Nom / Dénomination :** [JurisIA]
-* **Forme juridique :** [SELARL]
-* **Adresse du siège social :** [Adresse complète du cabinet]
-* **Inscription professionnelle :** Avocat inscrit au Barreau de [Ville] — Numéro de Toque : [Numéro]
-* **Numéro SIRET :** [Numéro SIRET à 14 chiffres]
-* **Numéro de TVA intracommunautaire :** [Numéro de TVA]
-* **Contact courriel :** [Email de contact, ex: contact@cabinet.com]
-* **Téléphone :** [Numéro de téléphone]
-* **Directeur de la publication :** [Nom du Directeur de la publication / de l'Avocat]
+* **Nom / Dénomination :** JurisIA
+* **Forme juridique :** SELARL
+* **Adresse du siège social :** Viroflay
+* **Numéro SIRET :** 176253387151837
+* **Numéro de TVA intracommunautaire :** 1763858
+* **Contact courriel :** contact@cabinet.com
+* **Téléphone :** 9868758769
+* **Directeur de la publication :** Laura Sery
 
 En sa qualité d'avocat, l'Éditeur est soumis aux règles déontologiques de la profession, régies notamment par la Loi n° 71-1130 du 31 décembre 1971, le Décret n° 91-1197 du 27 novembre 1991 et le Règlement Intérieur National (RIN) du Conseil National des Barreaux (CNB).
 
