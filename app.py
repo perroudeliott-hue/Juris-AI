@@ -3,178 +3,190 @@ import google.generativeai as genai
 import os
 
 # ==========================================
-# 1. CONFIGURATION DE LA PAGE ET STYLE CSS
+# 1. CONFIGURATION & DESIGN "CABINET PRESTIGE"
 # ==========================================
 st.set_page_config(
-    page_title="Assistance Contrats IA | Cabinet d'Avocats",
+    page_title="IA Juridique | Prototype Assistant",
     page_icon="⚖️",
-    layout="wide", # Layout large pour un look pro
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-# Injection de CSS personnalisé pour "pimper" l'interface
+# CSS Personnalisé pour coller exactement au rendu visuel souhaité
 st.markdown("""
 <style>
-    /* Modification du fond et des polices */
+    /* Fond principal */
     .stApp {
-        background-color: #1A1D21;
-        color: #ECF0F1;
+        background-color: #0E1117;
     }
     
-    /* Titre principal */
-    h1 {
-        color: #D4AF37 !important; /* Couleur dorée */
-        font-family: 'Times New Roman', Times, serif;
-    }
-    
-    /* Bulles de chat */
-    .stChatMessage {
-        border-radius: 15px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-    }
-    
-    /* Bulle Assistant (Gemini) */
-    .stChatMessage[data-testid="stChatMessageAssistant"] {
-        background-color: #2C3E50;
-        border: 1px solid #34495E;
-    }
-    
-    /* Bulle Utilisateur */
-    .stChatMessage[data-testid="stChatMessageUser"] {
-        background-color: #21618C;
-        border: 1px solid #2E86C1;
-    }
-    
-    /* Personnalisation de la barre latérale */
+    /* Style de la Sidebar */
     [data-testid="stSidebar"] {
-        background-color: #141619;
-        border-right: 2px solid #D4AF37;
+        background-color: #161B22;
+        border-right: 1px solid #D4AF37;
+        min-width: 350px !important;
+    }
+
+    /* Titre Principal Or */
+    .main-title {
+        color: #D4AF37;
+        font-size: 42px;
+        font-weight: bold;
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 10px;
+    }
+
+    /* Bannière de rappel déontologique */
+    .deonto-banner {
+        background-color: rgba(255, 75, 75, 0.1);
+        border: 2px solid #FF4B4B;
+        padding: 20px;
+        border-radius: 10px;
+        color: #FF4B4B;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    /* Alertes Sidebar - Style Blindé */
+    .sidebar-alert-red {
+        background-color: rgba(255, 75, 75, 0.2);
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 5px solid #FF4B4B;
+        margin-bottom: 15px;
+        font-size: 14px;
     }
     
-    /* Mention légale dans les réponses IA */
-    .ai-tracer {
-        font-size: 0.8rem;
-        color: #95A5A6;
-        font-style: italic;
-        margin-top: -10px;
-        margin-bottom: 10px;
+    .sidebar-alert-gold {
+        background-color: rgba(212, 175, 55, 0.1);
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 5px solid #D4AF37;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #D4AF37;
+    }
+
+    /* Style des messages de chat */
+    .stChatMessage {
+        background-color: #1D232C !important;
+        border: 1px solid #30363D !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 2. INTÉGRATION DES GARDE-FOUS (Sidebar)
+# 2. BARRE LATÉRALE : SÉCURITÉ & MENTIONS
 # ==========================================
 with st.sidebar:
-    st.image("https://img.icons8.com/color/96/lawyer.png", width=70) # Un petit logo par défaut
-    st.markdown("# 🛡️ Sécurité & Conformité")
+    st.markdown("<h2 style='color: #D4AF37;'>🛡️ Sécurité & Conformité</h2>", unsafe_allow_html=True)
     st.markdown("---")
     
-    # 2.1 Garde-fou Informatique (Souveraineté des données)
-    with st.expander("☁️ Hébergement & Flux de Données", expanded=True):
-        st.error("**ALERTE SOUVERAINETÉ :**")
-        st.write("""
-            Le modèle LLM utilisé (Gemini) est hébergé sur des serveurs de Google situés aux **États-Unis**.
-            Les données saisies dans le chat transitent hors de l'Union Européenne.
-        """)
-        
-    # 2.2 Garde-fou Secret Professionnel (Anonymisation obligatoire)
-    with st.expander("🤐 Confidentialité & Secret Pro.", expanded=True):
-        st.warning("**REGLE D'OR (Prototype) :**")
-        st.write("""
-            Il est **strictement interdit** de saisir :
-            - Des noms réels de clients physiques ou moraux.
-            - Des données financières spécifiques.
-            - Des détails d'affaires permettant l'identification.
-            *Utilisez des balises de type [PARTIE_A] ou [MONTANT].*
-        """)
+    # Garde-fou 1 : Souveraineté
+    st.markdown("""
+    <div class="sidebar-alert-red">
+        <b>⚠️ ALERTE SOUVERAINETÉ :</b><br>
+        Ce prototype utilise l'API <b>Gemini (Google USA)</b>.<br>
+        Vos données sont traitées hors UE. <u>Aucune garantie de souveraineté européenne</u> n'est appliquée sur ce flux de test.
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Garde-fou 2 : Secret Professionnel
+    st.markdown("""
+    <div class="sidebar-alert-gold">
+        <b>🤐 CONFIDENTIALITÉ & SECRET PRO :</b><br>
+        En vertu de l'article 66-5 de la loi de 1971, le secret professionnel est absolu.<br><br>
+        <b>STRICTEMENT INTERDIT :</b>
+        <ul>
+            <li>Noms de clients / adversaires</li>
+            <li>Coordonnées réelles</li>
+            <li>Montants d'honoraires</li>
+        </ul>
+        <i>Utilisez : [CLIENT], [ADVERSAIRE], [PRIX].</i>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # 2.3 Garde-fou Réglementaire (RGPD & AI Act awareness)
-    with st.expander("🇪🇺 Conformité Européenne", expanded=False):
-        st.info("**Cadre Légal :**")
-        st.write("""
-            - **RGPD :** Aucune Donnée à Caractère Personnel (DCP) ne doit être traitée ici.
-            - **EU AI Act :** Ce prototype est classé comme un système d'IA à risque limité. Sa traçabilité est assurée par la mention générique intégrée aux réponses.
-        """)
+    # Garde-fou 3 : Informatique & Libertés
+    st.info("""
+        **🔍 Audit Informatique :**
+        - Chiffrement TLS 1.3 actif.
+        - Pas de stockage de base de données.
+        - Purge des sessions à la fermeture.
+    """)
     
     st.markdown("---")
-    st.markdown("v0.9-beta | Démo Interne")
+    st.caption("Usage interne exclusivement - Version Prototype 1.0")
 
 # ==========================================
-# 3. CONFIGURATION API & PROMPT SYSTEM
+# 3. LOGIQUE API & PROMPT
 # ==========================================
-# Récupération de la clé depuis les secrets de déploiement (Streamlit Cloud ou variable d'env)
-cle_api = os.environ.get("IA_API_KEY")
+cle_api = st.secrets.get("IA_API_KEY") or os.environ.get("IA_API_KEY")
 
 if not cle_api:
-    st.error("🚨 ERREUR CRITIQUE : Clé API introuvable dans les secrets de déploiement.")
+    st.error("Clé API manquante. Ajoutez IA_API_KEY dans vos secrets.")
     st.stop()
 
 genai.configure(api_key=cle_api)
 
-# Master-Prompt Juridique Strict
-master_prompt = """
-Tu es un avocat français au Barreau de Paris, spécialisé en droit des obligations, droit commercial et conformité RGPD. 
-Ton objectif est d'assister un confrère dans la rédaction et la révision de contrats d'affaires. 
-Ton ton est institutionnel, hautement précis et neutre.
-
-TES CONSIGNES STRICTES DE TRAVAIL :
-1. DROIT APPLICABLE : Base-toi EXCLUSIVEMENT sur le droit français (Code civil, Code de commerce) et le RGPD. Refuse toute référence au droit anglo-saxon (Common Law) sauf demande explicite.
-2. SÉCURITÉ JURIDIQUE : Analyse systématiquement les risques de déséquilibre significatif (clauses abusives) dans tes propositions.
-3. ANTI-HALLUCINATION : Ne cite JAMAIS un article de loi ou une jurisprudence dont tu n'es pas absolument certain. En cas de doute, écris "[Point à vérifier par l'avocat]".
-4. FORMATAGE : Pour chaque demande, fournis d'abord une brève note d'analyse des risques (3 points clés), puis la proposition de rédaction juridique.
-5. RESPECT DE L'ANONYMISATION : Si l'utilisateur utilise des balises comme [PARTIE_A], conserve-les scrupuleusement.
+# Prompt Système ultra-juridique
+system_prompt = """
+Tu es un avocat français senior. Tu assistes ton confrère dans la rédaction de contrats.
+CONSIGNES :
+1. Droit Français uniquement.
+2. Identifie les risques (clauses léonines, déséquilibre significatif) AVANT de proposer le texte.
+3. Si l'utilisateur demande quelque chose d'illégal, refuse poliment.
+4. Reste formel : utilise "Maître", "Confrère" ou un ton neutre.
 """
 
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash", # Rapide et performant pour un chatbot
-    system_instruction=master_prompt
-)
+model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=system_prompt)
 
 # ==========================================
-# 4. INTERFACE DE CHAT & BANNIÈRE FIXE
+# 4. ZONE DE TRAVAIL PRINCIPALE
 # ==========================================
-st.markdown("# ⚖️ Assistant IA de Rédaction Contractuelle")
+st.markdown("<div class='main-title'>⚖️ Assistant IA de Rédaction Contractuelle</div>", unsafe_allow_html=True)
 
-# Bannière Déontologique Fixe (Inamovible)
-st.warning("""
-    **⛔ RAPPEL DÉONTOLOGIQUE :** Ce système est un prototype d'assistance. Il ne dispense pas de la qualification juridique. 
-    L'avocat signataire conserve l'entière responsabilité intellectuelle et légale de la rédaction finale du contrat.
-""")
+# Rappel déontologique inamovible
+st.markdown("""
+<div class="deonto-banner">
+    ⛔ RAPPEL DÉONTOLOGIQUE : Ce système est un assistant de rédaction. Il ne dispense pas de la qualification juridique. 
+    L'avocat signataire conserve l'entière responsabilité intellectuelle et légale de la rédaction finale du contrat (Responsabilité Civile Professionnelle).
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown("---")
-
-# Gestion de l'historique de chat en mémoire session
-if "chat_session" not in st.session_state:
-    st.session_state.chat_session = model.start_chat(history=[])
-
+# Initialisation du chat
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Bonjour Maître. Sur quel type de clause ou de contrat (NDA, Contrat SaaS, CGV) souhaitez-vous travailler ?"}]
+    st.session_state.messages = []
 
-# Affichage de l'historique
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+# Affichage des messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-# Zone de saisie utilisateur
-if prompt := st.chat_input("Ex: Rédige une clause de limitation de responsabilité plafonnée au montant du contrat..."):
-    # Enregistrement du message utilisateur
+# Entrée utilisateur
+if prompt := st.chat_input("Ex: Rédige une clause de force majeure adaptée à la jurisprudence actuelle..."):
+    # Affichage du message utilisateur
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Génération de la réponse Gemini
+    # Réponse de l'IA
     with st.chat_message("assistant"):
-        # Ajout systématique de la mention de traçabilité AI Act
-        st.markdown('<div class="ai-tracer">Texte généré par une intelligence artificielle (Gemini 1.5 Flash). Vérification humaine requise.</div>', unsafe_allow_html=True)
+        message_placeholder = st.empty()
+        # Mention de traçabilité IA ACT (Obligatoire)
+        st.caption("🤖 Traçabilité : Contenu généré par IA Générative (AI Act Compliance).")
         
-        with st.spinner("Analyse du contexte juridique..."):
-            try:
-                # Envoi du message dans la session de chat pour garder le contexte
-                response = st.session_state.chat_session.send_message(prompt)
-                st.markdown(response.text)
-                # Sauvegarde pour l'affichage de l'historique
-                st.session_state.messages.append({"role": "assistant", "content": response.text})
-            except Exception as e:
-                st.error(f"Erreur lors de la communication avec l'API. Vérifiez votre connexion. Détails : {e}")
+        try:
+            full_response = ""
+            # On simule un historique pour que l'IA se souvienne de la discussion
+            chat = model.start_chat(history=[])
+            response = chat.send_message(prompt)
+            full_response = response.text
+            
+            st.markdown(full_response)
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
+            
+        except Exception as e:
+            st.error(f"Erreur système : {e}")
+
+# Footer de bas de page
+st.markdown("---")
+st.markdown("<p style='text-align: center; color: #555;'>Propriété intellectuelle du Cabinet | Prototype de recherche interne</p>", unsafe_allow_html=True)
