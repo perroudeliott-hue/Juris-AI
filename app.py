@@ -148,12 +148,12 @@ if prompt := st.chat_input("Insérez vos directives ou la clause à réviser ici
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # 2. Appel à l'API et affichage de la réponse
+# 2. Appel à l'API et affichage de la réponse
     with st.chat_message("assistant"):
-        # Juste après avoir reçu la réponse de l'IA (response.text)
-# On cherche le score dans le texte
-import re
-match = re.search(r"\[SCORE: (\d+)/100\]", response.text)
+        with st.spinner("Analyse de la conformité et rédaction en cours..."):
+            try:
+                # Utilisation de la session de chat existante pour garder le contexte
+                response = st.session_state.chat_session.send_message(prompt)
                 
                 # Affichage du texte généré
                 st.markdown(response.text)
